@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CANFuelSubsystem;
 import static frc.robot.Constants.FuelConstants.*;
 
+public class Eject extends Command {
+  private final CANFuelSubsystem fuelSubsystem;
   private boolean isUnjamming = false;
   private final edu.wpi.first.wpilibj.Timer unjamTimer = new edu.wpi.first.wpilibj.Timer();
 
