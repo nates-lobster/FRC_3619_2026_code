@@ -30,6 +30,11 @@ public final class Constants {
     // Current limit for drivetrain motors. 60A is a reasonable maximum to reduce
     // likelihood of tripping breakers or damaging CIM motors
     public static final int DRIVE_MOTOR_CURRENT_LIMIT = 60;
+
+    public static final double TURNAROUND_REVERSE_SPEED = 35.0;
+    public static final double TURNAROUND_REVERSE_SECONDS = 0.60;
+    public static final double TURNAROUND_SPIN_SPEED = 55.0;
+    public static final double TURNAROUND_SPIN_SECONDS = 0.90;
   }
 
   public static final class FuelConstants {
@@ -44,7 +49,7 @@ public final class Constants {
 
     // All values likely need to be tuned based on your robot
     public static final double INDEXER_INTAKING_PERCENT = .8; 
-    public static final double INDEXER_LAUNCHING_PERCENT = -0.6;
+    public static final double INDEXER_LAUNCHING_PERCENT = 1.0;
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = 0.5;
 
     public static final double INTAKE_INTAKING_PERCENT = 0.6;

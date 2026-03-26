@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
 import frc.robot.subsystems.CANFuelSubsystem;
 
 /**
@@ -43,6 +44,16 @@ public class Robot extends TimedRobot {
 
     // Used to track usage of Kitbot code, please do not remove.
     HAL.report(tResourceType.kResourceType_Framework, 10);
+    HttpCamera httpCameraFrontRight = new HttpCamera("Back Camera", "http://10.36.19.11:1181/?action=stream"); 
+    // [mjpg:http://roboRIO-3619-FRC.local:1181/?action=stream, mjpg:http://10.36.19.2:1181/?action=stream]
+    HttpCamera httpCameraFrontLeft = new HttpCamera("Front Right Camera", "http://10.36.19.11:1182/?action=stream");
+    HttpCamera httpCameraBack = new HttpCamera("Front Left Camera", "http://10.36.19.11:1181/?action=stream");
+    CameraServer.addCamera(httpCameraBack);
+    CameraServer.addCamera(httpCameraFrontRight);
+    CameraServer.addCamera(httpCameraFrontLeft);
+    // CameraServer.startAutomaticCapture("Back Camera", 0);
+    // CameraServer.startAutomaticCapture("Front Right Camera", 1);
+    // CameraServer.startAutomaticCapture("Front Left Camera", 2);
     CameraServer.startAutomaticCapture();
   }
 
