@@ -83,4 +83,8 @@ public class CANDriveSubsystem extends SubsystemBase {
     drive.arcadeDrive(xSpeed, zRotation);
   }
 
+  public void driveArcade(double xSpeed, double zRotation, boolean squareInputs) {
+    drive.arcadeDrive(xSpeed, zRotation, squareInputs);
+  }
+
 }

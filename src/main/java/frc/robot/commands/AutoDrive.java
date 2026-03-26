@@ -31,7 +31,7 @@ public class AutoDrive extends Command {
   // arcade drive object
   @Override
   public void execute() {
-    driveSubsystem.driveArcade(xSpeed, zRotation);
+    driveSubsystem.driveArcade(xSpeed, zRotation, false);
   }
 
   // Called once the command ends or is interrupted.
