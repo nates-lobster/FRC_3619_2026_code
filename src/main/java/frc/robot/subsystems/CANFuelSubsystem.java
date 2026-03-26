@@ -16,11 +16,12 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-
 import static frc.robot.Constants.FuelConstants.*;
 
 public class CANFuelSubsystem extends SubsystemBase {
+  private static final double JAM_VELOCITY_THRESHOLD = 500.0; // RPM
+  private static final double UNJAM_FEEDER_POWER = -1.0; 
+  
   private final SparkMax LeftIntakeLauncher;
   private final SparkMax RightIntakeLauncher;
   private final SparkMax Indexer;
@@ -91,8 +92,21 @@ public class CANFuelSubsystem extends SubsystemBase {
     return Indexer.getEncoder().getVelocity();
   }
 
+  public void runUnjam() {
+    Indexer.set(UNJAM_FEEDER_POWER);
+    double intakePower = SmartDashboard.getNumber("Intaking intake roller value", INTAKE_INTAKING_PERCENT);
+    LeftIntakeLauncher.set(intakePower);
+    RightIntakeLauncher.set(intakePower);
+  }
+
+  public boolean isIndexerJammed(double targetPower) {
+    // Only consider it a jam if we are commanding significant power but velocity is near-zero
+    // We use Math.signum to ensure we're checking in the direction of command
+    return Math.abs(targetPower) > 0.1 && Math.abs(getLiveIndexerVelocity()) < JAM_VELOCITY_THRESHOLD;
+  }
+
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Indexer Velocity", getLiveIndexerVelocity());
   }
 }

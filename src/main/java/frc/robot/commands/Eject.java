@@ -9,11 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CANFuelSubsystem;
 import static frc.robot.Constants.FuelConstants.*;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class Eject extends Command {
-  /** Creates a new Intake. */
-
-  CANFuelSubsystem fuelSubsystem;
+  private boolean isUnjamming = false;
+  private final edu.wpi.first.wpilibj.Timer unjamTimer = new edu.wpi.first.wpilibj.Timer();
 
   public Eject(CANFuelSubsystem fuelSystem) {
     addRequirements(fuelSystem);
@@ -24,23 +21,37 @@ public class Eject extends Command {
   // appropriate values for ejecting
   @Override
   public void initialize() {
+    isUnjamming = false;
     fuelSubsystem
         .setIntakeLauncherRoller(
              -1 * SmartDashboard.getNumber("Intaking intake roller value", INTAKE_EJECT_PERCENT));
-     fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Intaking intake roller value", INDEXER_LAUNCHING_PERCENT));
+    fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Intaking intake roller value", INDEXER_LAUNCHING_PERCENT));
   }
 
   // Called every time the scheduler runs while the command is scheduled. This
   // command doesn't require updating any values while running
   @Override
   public void execute() {
+    double feederTarget = SmartDashboard.getNumber("Intaking intake roller value", INDEXER_LAUNCHING_PERCENT);
+    double launcherTarget = -1 * SmartDashboard.getNumber("Intaking intake roller value", INTAKE_EJECT_PERCENT);
+
+    if (isUnjamming) {
+      if (unjamTimer.hasElapsed(1.0)) {
+        isUnjamming = false;
+        fuelSubsystem.setFeederRoller(feederTarget);
+        fuelSubsystem.setIntakeLauncherRoller(launcherTarget);
+      }
+    } else if (fuelSubsystem.isIndexerJammed(feederTarget)) {
+      isUnjamming = true;
+      unjamTimer.restart();
+      fuelSubsystem.runUnjam();
+    }
   }
 
   // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
-    fuelSubsystem.setIntakeLauncherRoller(0);
-    fuelSubsystem.setFeederRoller(0);
+    fuelSubsystem.stop();
   }
 
   // Returns true when the command should end.

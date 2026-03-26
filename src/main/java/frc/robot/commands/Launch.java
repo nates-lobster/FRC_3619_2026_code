@@ -13,7 +13,8 @@ import static frc.robot.Constants.FuelConstants.*;
 public class Launch extends Command {
   /** Creates a new Intake. */
 
-  CANFuelSubsystem fuelSubsystem;
+  private boolean isUnjamming = false;
+  private final edu.wpi.first.wpilibj.Timer unjamTimer = new edu.wpi.first.wpilibj.Timer();
 
   public Launch(CANFuelSubsystem fuelSystem) {
     addRequirements(fuelSystem);
@@ -24,6 +25,7 @@ public class Launch extends Command {
   // appropriate values for intaking
   @Override
   public void initialize() {
+    isUnjamming = false;
     fuelSubsystem
         .setIntakeLauncherRoller(
             SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_PERCENT));
@@ -34,11 +36,26 @@ public class Launch extends Command {
   // command doesn't require updating any values while running
   @Override
   public void execute() {
+    double feederTarget = SmartDashboard.getNumber("Launching feeder roller value", INDEXER_LAUNCHING_PERCENT);
+    double launcherTarget = SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_PERCENT);
+
+    if (isUnjamming) {
+      if (unjamTimer.hasElapsed(1.0)) {
+        isUnjamming = false;
+        fuelSubsystem.setFeederRoller(feederTarget);
+        fuelSubsystem.setIntakeLauncherRoller(launcherTarget);
+      }
+    } else if (fuelSubsystem.isIndexerJammed(feederTarget)) {
+      isUnjamming = true;
+      unjamTimer.restart();
+      fuelSubsystem.runUnjam();
+    }
   }
 
   // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
+    fuelSubsystem.stop();
   }
 
   // Returns true when the command should end.

@@ -78,10 +78,12 @@ public class RobotContainer {
     driverController.leftBumper().whileTrue(new Intake(fuelSubsystem));
     // While the right bumper on the operator controller is held, spin up for 1
     // second, then launch fuel. When the button is released, stop.
-    driverController.rightBumper().whileTrue(new LaunchSequence(fuelSubsystem));
+    driverController.rightBumper().whileTrue(
+        new Unjam(fuelSubsystem).withTimeout(1.0).andThen(new LaunchSequence(fuelSubsystem)));
     // While the A button is held on the operator controller, eject fuel back out
     // the intake
-    driverController.a().whileTrue(new Eject(fuelSubsystem));
+    driverController.a().whileTrue(
+        new Unjam(fuelSubsystem).withTimeout(1.0).andThen(new Eject(fuelSubsystem)));
 
     // When X button is pressed, activate turbo boost for 1.5 seconds
     driverController.x().onTrue(Commands.runOnce(() -> driveSubsystem.activateTurbo()));
