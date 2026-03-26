@@ -82,6 +82,10 @@ public class RobotContainer {
     // While the A button is held on the operator controller, eject fuel back out
     // the intake
     driverController.a().whileTrue(new Eject(fuelSubsystem));
+
+    // When X button is pressed, activate turbo boost for 1.5 seconds
+    driverController.x().onTrue(Commands.runOnce(() -> driveSubsystem.activateTurbo()));
+
    // While the down arrow on the directional pad is held it will unclimb the robot
     // driverController.povDown().whileTrue(new ClimbDown(climberSubsystem));
     // While the up arrow on the directional pad is held it will cimb the robot

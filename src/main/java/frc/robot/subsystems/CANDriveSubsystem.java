@@ -11,10 +11,12 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.DriveConstants.*;
+import static frc.robot.Constants.OperatorConstants.*;
 
 public class CANDriveSubsystem extends SubsystemBase {
   private final SparkMax leftLeader;
@@ -23,6 +25,8 @@ public class CANDriveSubsystem extends SubsystemBase {
   private final SparkMax rightFollower;
 
   private final DifferentialDrive drive;
+  private final Timer turboTimer = new Timer();
+  private static final double TURBO_DURATION = 1.5;
 
   public CANDriveSubsystem() {
     // create brushed motors for drive
@@ -77,6 +81,23 @@ public class CANDriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (turboTimer.hasElapsed(TURBO_DURATION)) {
+      turboTimer.stop();
+      turboTimer.reset();
+    }
+    SmartDashboard.putBoolean("Turbo Active", isTurboActive());
+  }
+
+  public void activateTurbo() {
+    turboTimer.restart();
+  }
+
+  public boolean isTurboActive() {
+    return turboTimer.isRunning();
+  }
+
+  public double getDriveScaling() {
+    return isTurboActive() ? 1.0 : DRIVE_SCALING;
   }
 
   public void driveArcade(double xSpeed, double zRotation) {
