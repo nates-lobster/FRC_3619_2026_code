@@ -27,9 +27,24 @@ public final class Constants {
     public static final int RIGHT_LEADER_ID = 2;
     public static final int RIGHT_FOLLOWER_ID = 4;
 
-    // Current limit for drivetrain motors. 60A is a reasonable maximum to reduce
-    // likelihood of tripping breakers or damaging CIM motors
-    public static final int DRIVE_MOTOR_CURRENT_LIMIT = 60;
+    // NEO motors are brushless
+    // Current limit for drivetrain motors (NEOs can handle up to 80A, 40A is conservative for drivetrain)
+    public static final int DRIVE_MOTOR_CURRENT_LIMIT = 40;
+
+    // ---- ROBOT GEOMETRY - TUNE THESE FOR YOUR ROBOT ----
+    // Wheel diameter in meters. Common FRC sizes: 6" = 0.1524m, 4" = 0.1016m
+    public static final double WHEEL_DIAMETER_METERS = 0.1524; // 6 inch wheels
+    // Track width: distance between left and right wheels in meters (measure center-to-center)
+    public static final double TRACK_WIDTH_METERS = 0.56; // tune this measure your robot
+    // Gear ratio between motor shaft and wheel (e.g. 8.45:1 is common for NEO on KOP chassis)
+    public static final double DRIVE_GEAR_RATIO = 8.45;
+
+    // Encoder conversion factor: converts motor rotations → meters at the wheel
+    public static final double POSITION_CONVERSION_FACTOR =
+        (WHEEL_DIAMETER_METERS * Math.PI) / DRIVE_GEAR_RATIO;
+    // Velocity conversion: motor RPM → meters per second
+    public static final double VELOCITY_CONVERSION_FACTOR =
+        POSITION_CONVERSION_FACTOR / 60.0;
 
     public static final double TURNAROUND_REVERSE_SPEED = 35.0;
     public static final double TURNAROUND_REVERSE_SECONDS = 0.60;

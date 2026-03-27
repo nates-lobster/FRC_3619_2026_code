@@ -6,7 +6,9 @@ package frc.robot;
 
 import java.util.Set;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,7 +19,6 @@ import frc.robot.commands.ClimbDown;
 import frc.robot.commands.ClimbUp;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Eject;
-import frc.robot.commands.ExampleAuto;
 import frc.robot.commands.Intake;
 import frc.robot.commands.LaunchSequence;
 import frc.robot.commands.TurnAround;
@@ -47,8 +48,8 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(
       OPERATOR_CONTROLLER_PORT);
 
-  // The autonomous chooser
-  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  // PathPlanner auto chooser - automatically populated from deploy/pathplanner/autos/
+  private final SendableChooser<Command> autoChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -56,10 +57,10 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    // Set the options to show up in the Dashboard for selecting auto modes. If you
-    // add additional auto modes you can add additional lines here with
-    // autoChooser.addOption
-    autoChooser.setDefaultOption("Autonomous", new ExampleAuto(driveSubsystem, fuelSubsystem));
+    // Build the auto chooser from PathPlanner. AutoBuilder.configure() must be
+    // called (inside CANDriveSubsystem constructor) before this line.
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
