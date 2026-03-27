@@ -57,9 +57,15 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    // Build the auto chooser from PathPlanner. AutoBuilder.configure() must be
-    // called (inside CANDriveSubsystem constructor) before this line.
-    autoChooser = AutoBuilder.buildAutoChooser();
+    // Build the auto chooser from PathPlanner only if AutoBuilder was configured
+    // successfully (requires pathplanner/settings.json to exist in deploy dir).
+    if (AutoBuilder.isConfigured()) {
+      autoChooser = AutoBuilder.buildAutoChooser();
+    } else {
+      autoChooser = new SendableChooser<>();
+      System.err.println("[RobotContainer] AutoBuilder not configured — auto chooser will be empty. " +
+          "Open PathPlanner and save your robot config, or check settings.json.");
+    }
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
