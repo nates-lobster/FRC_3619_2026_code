@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -55,6 +56,12 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    // Register named commands for use in PathPlanner auto routines.
+    // Add these to any auto in the PathPlanner GUI as action blocks.
+    NamedCommands.registerCommand("Intake", new Intake(fuelSubsystem));
+    NamedCommands.registerCommand("Launch",
+        new Unjam(fuelSubsystem).withTimeout(1.0).andThen(new LaunchSequence(fuelSubsystem)));
+
     configureBindings();
 
     // Build the auto chooser from PathPlanner only if AutoBuilder was configured
