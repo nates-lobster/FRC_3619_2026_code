@@ -6,7 +6,7 @@ package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.LTVUnicycleController;
+import com.pathplanner.lib.controllers.PPLTVController;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -27,8 +27,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-
 import static frc.robot.Constants.DriveConstants.*;
 import static frc.robot.Constants.OperatorConstants.*;
 
@@ -124,7 +122,7 @@ public class CANDriveSubsystem extends SubsystemBase {
           this::resetPose,
           this::getChassisSpeeds,
           (speeds, feedforwards) -> driveFromChassisSpeeds(speeds),
-          new LTVUnicycleController(Robot.isSimulation() ? 0.02 : 0.02),
+          new PPLTVController(0.02),
           config,
           () -> false, // Set to true if on red alliance and paths need to flip
           this
