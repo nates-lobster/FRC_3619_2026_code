@@ -30,6 +30,8 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  private final Timer m_shiftTimer = new Timer();
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -50,6 +52,13 @@ public class Robot extends TimedRobot {
     CameraServer.addCamera(backCamera);
     CameraServer.addCamera(frontRightCamera);
     CameraServer.addCamera(frontLeftCamera);
+    
+    // Shift Timer initialization
+    SmartDashboard.putNumber("Manual Shift Duration (s)", 150.0);
+    SmartDashboard.putBoolean("Reset/Start Manual Shift", false);
+    SmartDashboard.putString("Current Shift", "Ready");
+    m_shiftTimer.stop();
+    m_shiftTimer.reset();
   }
 
   /**
@@ -80,6 +89,59 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Live Intake Velocity", fuelSubsystem.getLiveIntakeVelocity());
     SmartDashboard.putNumber("Live Launcher Velocity", fuelSubsystem.getLiveLauncherVelocity());
     SmartDashboard.putNumber("Live Indexer Velocity", fuelSubsystem.getLiveIndexerVelocity());
+
+    // Shift timer logic
+    double matchTime = Timer.getMatchTime();
+    String shiftName = "NO MATCH";
+    double timeInShift = 0;
+    boolean isMatchActive = matchTime > 0;
+
+    if (isAutonomous()) {
+      shiftName = "AUTO";
+      timeInShift = matchTime;
+    } else if (isTeleop() && isMatchActive) {
+      // Logic based on the provided "MATCH Timeframe" table
+      // Starts at 2:20 (140s)
+      if (matchTime > 130) {
+        shiftName = "TRANSITION";
+        timeInShift = matchTime - 130;
+      } else if (matchTime > 105) {
+        shiftName = "SHIFT 1";
+        timeInShift = matchTime - 105;
+      } else if (matchTime > 80) {
+        shiftName = "SHIFT 2";
+        timeInShift = matchTime - 80;
+      } else if (matchTime > 55) {
+        shiftName = "SHIFT 3";
+        timeInShift = matchTime - 55;
+      } else if (matchTime > 30) {
+        shiftName = "SHIFT 4";
+        timeInShift = matchTime - 30;
+      } else {
+        shiftName = "END GAME";
+        timeInShift = matchTime;
+      }
+    } else {
+      // Manual Practice Timer Logic
+      if (SmartDashboard.getBoolean("Reset/Start Manual Shift", false)) {
+        m_shiftTimer.restart();
+        SmartDashboard.putBoolean("Reset/Start Manual Shift", false);
+      }
+      
+      double manualDuration = SmartDashboard.getNumber("Manual Shift Duration (s)", 150.0);
+      if (m_shiftTimer.isRunning()) {
+        double remaining = manualDuration - m_shiftTimer.get();
+        shiftName = (remaining <= 0) ? "SHIFT OVER" : "PRACTICE SHIFT";
+        timeInShift = Math.max(0, remaining);
+      } else {
+        shiftName = "READY (MANUAL)";
+        timeInShift = manualDuration;
+      }
+    }
+
+    SmartDashboard.putString("Current Shift", shiftName);
+    SmartDashboard.putNumber("Shift Time Remaining (s)", timeInShift);
+    SmartDashboard.putBoolean("Shift Ending Soon", isMatchActive && (timeInShift < 5.0 && !shiftName.equals("END GAME")));
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
