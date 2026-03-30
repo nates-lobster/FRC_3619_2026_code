@@ -61,6 +61,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", new Intake(fuelSubsystem));
     NamedCommands.registerCommand("Launch",
         new Unjam(fuelSubsystem).withTimeout(1.0).andThen(new LaunchSequence(fuelSubsystem)));
+    NamedCommands.registerCommand("Arm Up", 
+        Commands.run(() -> climberSubsystem.setClimber(frc.robot.Constants.ClimbConstants.CLIMBER_MOTOR_UP_PERCENT), climberSubsystem)
+            .until(() -> climberSubsystem.getPosition() >= SmartDashboard.getNumber("Climber/Upper Limit", 100.0))
+            .finallyDo(() -> climberSubsystem.stop()));
+    NamedCommands.registerCommand("Arm Down", 
+        Commands.run(() -> climberSubsystem.setClimber(frc.robot.Constants.ClimbConstants.CLIMBER_MOTOR_DOWN_PERCENT), climberSubsystem)
+            .until(() -> climberSubsystem.getPosition() <= SmartDashboard.getNumber("Climber/Retract Limit", 0.0))
+            .finallyDo(() -> climberSubsystem.stop()));
 
     configureBindings();
 

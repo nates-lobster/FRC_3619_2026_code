@@ -30,25 +30,32 @@ public class ClimberSubsystem extends SubsystemBase {
     climbConfig.idleMode(IdleMode.kBrake);
     climberMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    // Add a field in SmartDashboard to set the upper limit.
+    // Add fields in SmartDashboard to set the limits.
     SmartDashboard.setDefaultNumber("Climber/Upper Limit", upperLimitDefault);
+    SmartDashboard.setDefaultNumber("Climber/Retract Limit", 0.0);
   }
 
   // A method to set the percentage of the climber
   public void setClimber(double power) {
-    double currentPosition = climberMotor.getEncoder().getPosition();
+    double currentPosition = getPosition();
     double upperLimit = SmartDashboard.getNumber("Climber/Upper Limit", upperLimitDefault);
+    double retractLimit = SmartDashboard.getNumber("Climber/Retract Limit", 0.0);
 
     // If we're trying to move UP (positive power) and at/past the upper limit, stop.
     if (power > 0 && currentPosition >= upperLimit) {
       power = 0;
     }
-    // If we're trying to move DOWN (negative power) and at/past the bottom limit (0), stop.
-    else if (power < 0 && currentPosition <= 0) {
+    // If we're trying to move DOWN (negative power) and at/past the retract limit, stop.
+    else if (power < 0 && currentPosition <= retractLimit) {
       power = 0;
     }
 
     climberMotor.set(power);
+  }
+
+  // A method to get the current position of the climber
+  public double getPosition() {
+    return climberMotor.getEncoder().getPosition();
   }
 
   // A method to stop the climber
