@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.FuelConstants.*;
@@ -21,6 +22,8 @@ import static frc.robot.Constants.FuelConstants.*;
 public class CANFuelSubsystem extends SubsystemBase {
   private static final double JAM_VELOCITY_THRESHOLD = 500.0; // RPM
   private static final double UNJAM_FEEDER_POWER = -1.0; 
+  private final Timer jamTimer = new Timer();
+  private static final double JAM_TIME_THRESHOLD = 0.2; // 0.2 seconds delay
   
   private final SparkMax LeftIntakeLauncher;
   private final SparkMax RightIntakeLauncher;
@@ -103,8 +106,18 @@ public class CANFuelSubsystem extends SubsystemBase {
 
   public boolean isIndexerJammed(double targetPower) {
     // Only consider it a jam if we are commanding significant power but velocity is near-zero
-    // We use Math.signum to ensure we're checking in the direction of command
-    return Math.abs(targetPower) > 0.1 && Math.abs(getLiveIndexerVelocity()) < JAM_VELOCITY_THRESHOLD;
+    if (Math.abs(targetPower) > 0.1 && Math.abs(getLiveIndexerVelocity()) < JAM_VELOCITY_THRESHOLD) {
+      // Start/Continue the jam timer
+      if (jamTimer.get() == 0) {
+        jamTimer.start();
+      }
+      return jamTimer.hasElapsed(JAM_TIME_THRESHOLD);
+    } else {
+      // Reset the timer when not in a jam state
+      jamTimer.stop();
+      jamTimer.reset();
+      return false;
+    }
   }
 
   @Override
