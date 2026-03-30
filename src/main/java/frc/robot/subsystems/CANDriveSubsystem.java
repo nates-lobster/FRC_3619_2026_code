@@ -85,11 +85,12 @@ public class CANDriveSubsystem extends SubsystemBase {
         .positionConversionFactor(POSITION_CONVERSION_FACTOR)
         .velocityConversionFactor(VELOCITY_CONVERSION_FACTOR);
 
-    // Right side: not inverted
+    // Right side: inverted so positive values drive forward on both sides
+    leaderConfig.inverted(true);
     rightLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    // Left side: inverted so positive values drive forward on both sides
-    leaderConfig.inverted(true);
+    // Left side: not inverted
+    leaderConfig.inverted(false);
     leftLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     // Get built-in NEO encoders

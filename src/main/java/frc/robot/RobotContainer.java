@@ -39,7 +39,7 @@ public class RobotContainer {
   // The robot's subsystems
   private final CANDriveSubsystem driveSubsystem = new CANDriveSubsystem();
   private final CANFuelSubsystem fuelSubsystem = new CANFuelSubsystem();
-  // private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
   // The driver's controller
   private final CommandXboxController driverController = new CommandXboxController(
@@ -111,6 +111,11 @@ public class RobotContainer {
     driverController.povUp().onTrue(
         Commands.defer(() -> new TurnAround(driveSubsystem), Set.of(driveSubsystem)));
 
+    // Require both Back and Start buttons at the same time to home the climber
+    driverController.back().and(driverController.start()).onTrue(
+        Commands.runOnce(() -> climberSubsystem.homeMotor())
+    );
+
     // Set the default command for the drive subsystem to the command provided by
     // factory with the values provided by the joystick axes on the driver
     // controller. The Y axis of the controller is inverted so that pushing the
@@ -120,9 +125,14 @@ public class RobotContainer {
 
     fuelSubsystem.setDefaultCommand(fuelSubsystem.run(() -> fuelSubsystem.stop()));
 
-    // climberSubsystem.setDefaultCommand(climberSubsystem.run(() -> climberSubsystem.stop()));
-
-  }
+    climberSubsystem.setDefaultCommand(
+        Commands.run(
+            () -> {
+              // Left trigger goes up (positive), right trigger goes down (negative)
+              double power = driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis();
+              climberSubsystem.setClimber(power);
+            },
+            climberSubsystem));
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -8,16 +8,17 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import static frc.robot.Constants.ClimbConstatns.*;
+import static frc.robot.Constants.ClimbConstants.*;
 
 public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax climberMotor;
 
   /** Creates a new CANBallSubsystem. */
   public ClimberSubsystem() {
-    // create brushed motors for each of the motors on the launcher mechanism
-    climberMotor = new SparkMax(CLIMBER_MOTOR_ID, MotorType.kBrushed);
+    // create brushless motors for each of the motors on the launcher mechanism
+    climberMotor = new SparkMax(CLIMBER_MOTOR_ID, MotorType.kBrushless);
 
     // create the configuration for the climb moter, set a current limit and apply
     // the config to the controller
@@ -37,8 +38,14 @@ public class ClimberSubsystem extends SubsystemBase {
     climberMotor.set(0);
   }
 
+  // A method to home the climber motor (reset encoder to 0)
+  public void homeMotor() {
+    climberMotor.getEncoder().setPosition(0);
+  }
+
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // Project the encoder position to SmartDashboard
+    SmartDashboard.putNumber("Climber/Encoder Position", climberMotor.getEncoder().getPosition());
   }
 }
