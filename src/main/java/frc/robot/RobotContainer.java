@@ -133,6 +133,7 @@ public class RobotContainer {
               climberSubsystem.setClimber(power);
             },
             climberSubsystem));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
