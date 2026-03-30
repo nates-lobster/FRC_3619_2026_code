@@ -168,7 +168,10 @@ public class CANDriveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getHeading() {
-    return gyro.getRotation2d();
+    // Calculate heading based on wheel encoders since gyro is not present/functional.
+    // Right wheel moving forward and left moving backward causes leftward (positive) rotation.
+    double headingRadians = (rightEncoder.getPosition() - leftEncoder.getPosition()) / TRACK_WIDTH_METERS;
+    return Rotation2d.fromRadians(headingRadians);
   }
 
   // ---- Chassis Speeds (required by PathPlanner) ----

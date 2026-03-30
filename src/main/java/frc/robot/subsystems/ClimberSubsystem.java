@@ -15,6 +15,9 @@ import static frc.robot.Constants.ClimbConstants.*;
 public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax climberMotor;
 
+  // Default to an arbitrarily large number, you can adjust this value from SmartDashboard!
+  private double upperLimitDefault = 100.0;
+
   /** Creates a new CANBallSubsystem. */
   public ClimberSubsystem() {
     // create brushless motors for each of the motors on the launcher mechanism
@@ -26,10 +29,25 @@ public class ClimberSubsystem extends SubsystemBase {
     climbConfig.smartCurrentLimit(CLIMBER_MOTOR_CURRENT_LIMIT);
     climbConfig.idleMode(IdleMode.kBrake);
     climberMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    // Add a field in SmartDashboard to set the upper limit.
+    SmartDashboard.setDefaultNumber("Climber/Upper Limit", upperLimitDefault);
   }
 
   // A method to set the percentage of the climber
   public void setClimber(double power) {
+    double currentPosition = climberMotor.getEncoder().getPosition();
+    double upperLimit = SmartDashboard.getNumber("Climber/Upper Limit", upperLimitDefault);
+
+    // If we're trying to move UP (positive power) and at/past the upper limit, stop.
+    if (power > 0 && currentPosition >= upperLimit) {
+      power = 0;
+    }
+    // If we're trying to move DOWN (negative power) and at/past the bottom limit (0), stop.
+    else if (power < 0 && currentPosition <= 0) {
+      power = 0;
+    }
+
     climberMotor.set(power);
   }
 
