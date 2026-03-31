@@ -28,6 +28,7 @@ public class ClimberSubsystem extends SubsystemBase {
     SparkMaxConfig climbConfig = new SparkMaxConfig();
     climbConfig.smartCurrentLimit(CLIMBER_MOTOR_CURRENT_LIMIT);
     climbConfig.idleMode(IdleMode.kBrake);
+    climbConfig.inverted(true);
     climberMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     // Add fields in SmartDashboard to set the limits.
