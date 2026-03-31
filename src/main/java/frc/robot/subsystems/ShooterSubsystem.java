@@ -1,13 +1,14 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.PersistMode;
+import com.revrobotics.spark.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -61,8 +62,8 @@ public class ShooterSubsystem extends SubsystemBase {
     
     // Set PF gains for the flywheel
     flywheelConfig.closedLoop
-        .p(SHOOTER_P)
-        .velocityFF(SHOOTER_FF);
+        .p(SHOOTER_P);
+    flywheelConfig.closedLoop.feedForward.kV(SHOOTER_FF);
 
     // Apply config to flywheels (right is inverted in this setup)
     rightFlywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -78,8 +79,8 @@ public class ShooterSubsystem extends SubsystemBase {
     
     // Indexer also uses velocity control during launch
     indexerConfig.closedLoop
-        .p(SHOOTER_P) 
-        .velocityFF(SHOOTER_FF); 
+        .p(SHOOTER_P);
+    indexerConfig.closedLoop.feedForward.kV(SHOOTER_FF);
 
     indexer.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -171,11 +172,12 @@ public class ShooterSubsystem extends SubsystemBase {
     // Update config if values changed on the dashboard
     if (p != lastP || ff != lastFF) {
       SparkMaxConfig tuningConfig = new SparkMaxConfig();
-      tuningConfig.closedLoop.p(p).velocityFF(ff);
+      tuningConfig.closedLoop.p(p);
+      tuningConfig.closedLoop.feedForward.kV(ff);
       
-      leftFlywheel.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
-      rightFlywheel.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
-      indexer.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
+      leftFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+      rightFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+      indexer.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
       
       lastP = p;
       lastFF = ff;
