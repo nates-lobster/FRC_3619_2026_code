@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
-import frc.robot.subsystems.CANFuelSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -85,10 +85,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Match Time", Timer.getMatchTime());
 
-    CANFuelSubsystem fuelSubsystem = m_robotContainer.getFuelSubsystem();
-    SmartDashboard.putNumber("Live Intake Velocity", fuelSubsystem.getLiveIntakeVelocity());
-    SmartDashboard.putNumber("Live Launcher Velocity", fuelSubsystem.getLiveLauncherVelocity());
-    SmartDashboard.putNumber("Live Indexer Velocity", fuelSubsystem.getLiveIndexerVelocity());
+    ShooterSubsystem shooterSubsystem = m_robotContainer.getShooterSubsystem();
+    SmartDashboard.putNumber("Live Launcher Velocity", shooterSubsystem.getVelocityRPM());
+    SmartDashboard.putNumber("Live Indexer Velocity", shooterSubsystem.getLiveIndexerVelocity());
 
     // Shift timer logic
     double matchTime = Timer.getMatchTime();
