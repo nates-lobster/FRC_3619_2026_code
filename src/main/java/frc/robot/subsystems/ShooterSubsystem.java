@@ -140,6 +140,13 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   /**
+   * Returns the current indexer velocity in RPM.
+   */
+  public double getLiveIndexerVelocity() {
+    return indexer.getEncoder().getVelocity();
+  }
+
+  /**
    * Returns true if the launcher is within the given tolerance of the target RPM.
    */
   public boolean atSetpoint(double targetRPM, double toleranceRPM) {
