@@ -106,8 +106,8 @@ public class ShooterSubsystem extends SubsystemBase {
       leftFlywheel.set(0);
       rightFlywheel.set(0);
     } else {
-      leftController.setReference(targetRPM, ControlType.kVelocity);
-      rightController.setReference(targetRPM, ControlType.kVelocity);
+      leftController.setSetpoint(targetRPM, ControlType.kVelocity);
+      rightController.setSetpoint(targetRPM, ControlType.kVelocity);
     }
   }
 
@@ -119,7 +119,7 @@ public class ShooterSubsystem extends SubsystemBase {
     if (targetRPM == 0) {
       indexer.set(0);
     } else {
-      indexerController.setReference(targetRPM, ControlType.kVelocity);
+      indexerController.setSetpoint(targetRPM, ControlType.kVelocity);
     }
   }
 
