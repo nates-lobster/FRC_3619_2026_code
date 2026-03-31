@@ -25,7 +25,7 @@ import frc.robot.commands.LaunchSequence;
 import frc.robot.commands.TurnAround;
 import frc.robot.commands.Unjam;
 import frc.robot.subsystems.CANDriveSubsystem;
-import frc.robot.subsystems.CANFuelSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 
 /**
@@ -38,7 +38,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 public class RobotContainer {
   // The robot's subsystems
   private final CANDriveSubsystem driveSubsystem = new CANDriveSubsystem();
-  private final CANFuelSubsystem fuelSubsystem = new CANFuelSubsystem();
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
   // The driver's controller
@@ -58,9 +58,9 @@ public class RobotContainer {
   public RobotContainer() {
     // Register named commands for use in PathPlanner auto routines.
     // Add these to any auto in the PathPlanner GUI as action blocks.
-    NamedCommands.registerCommand("Intake", new Intake(fuelSubsystem));
+    NamedCommands.registerCommand("Intake", new Intake(shooterSubsystem));
     NamedCommands.registerCommand("Launch",
-        new Unjam(fuelSubsystem).withTimeout(1.0).andThen(new LaunchSequence(fuelSubsystem)));
+        new Unjam(shooterSubsystem).withTimeout(1.0).andThen(new LaunchSequence(shooterSubsystem)));
     NamedCommands.registerCommand("Arm Up", 
         Commands.run(() -> climberSubsystem.setClimber(frc.robot.Constants.ClimbConstants.CLIMBER_MOTOR_UP_PERCENT), climberSubsystem)
             .until(() -> climberSubsystem.getPosition() >= SmartDashboard.getNumber("Climber/Upper Limit", 100.0))
@@ -98,15 +98,15 @@ public class RobotContainer {
   private void configureBindings() {
 
     // While the left bumper on operator controller is held, intake Fuel
-    driverController.leftBumper().whileTrue(new Intake(fuelSubsystem));
+    driverController.leftBumper().whileTrue(new Intake(shooterSubsystem));
     // While the right bumper on the operator controller is held, spin up for 1
     // second, then launch fuel. When the button is released, stop.
     driverController.rightBumper().whileTrue(
-        new Unjam(fuelSubsystem).withTimeout(1.0).andThen(new LaunchSequence(fuelSubsystem)));
+        new Unjam(shooterSubsystem).withTimeout(1.0).andThen(new LaunchSequence(shooterSubsystem)));
     // While the A button is held on the operator controller, eject fuel back out
     // the intake
     driverController.a().whileTrue(
-        new Unjam(fuelSubsystem).withTimeout(1.0).andThen(new Eject(fuelSubsystem)));
+        new Unjam(shooterSubsystem).withTimeout(1.0).andThen(new Eject(shooterSubsystem)));
 
     // When X button is pressed, activate turbo boost for 1.5 seconds
     driverController.x().onTrue(Commands.runOnce(() -> driveSubsystem.activateTurbo()));
@@ -131,7 +131,7 @@ public class RobotContainer {
     // value)
     driveSubsystem.setDefaultCommand(new Drive(driveSubsystem, driverController));
 
-    fuelSubsystem.setDefaultCommand(fuelSubsystem.run(() -> fuelSubsystem.stop()));
+    shooterSubsystem.setDefaultCommand(shooterSubsystem.run(() -> shooterSubsystem.stop()));
 
     climberSubsystem.setDefaultCommand(
         Commands.run(
@@ -153,7 +153,7 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public CANFuelSubsystem getFuelSubsystem() {
-    return fuelSubsystem;
+  public ShooterSubsystem getShooterSubsystem() {
+    return shooterSubsystem;
   }
 }
