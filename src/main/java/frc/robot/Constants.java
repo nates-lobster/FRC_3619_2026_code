@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -68,10 +66,25 @@ public final class Constants {
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = 0.5;
 
     public static final double INTAKE_INTAKING_PERCENT = 0.6;
-    public static final double LAUNCHING_LAUNCHER_PERCENT = .85;
+    public static final double LAUNCHING_LAUNCHER_RPM = 3000.0;
+    public static final double INTAKE_LAUNCHER_RPM = 1000.0;
     public static final double INTAKE_EJECT_PERCENT = -0.8;
 
-    public static final double SPIN_UP_SECONDS = 1.0;
+    public static final double SPIN_UP_SECONDS = 0.3;
+
+    // Shooter PID/PF Constants
+    // We use PF (Proportional + Feedforward) for flywheels because:
+    // 1. FF provides the baseline voltage needed for the target RPM.
+    // 2. P corrects for small errors/dips when a ball is launched.
+    // 3. I-term is avoided to prevent windup/overshoot on a high-inertia wheel.
+    public static final double SHOOTER_P = 0.0001; 
+    public static final double SHOOTER_FF = 0.00017; 
+    
+    public static final double SHOOTER_RPM_TOLERANCE = 100.0;
+
+    // Indexer Ratios (as percentage of launcher target RPM)
+    public static final double INDEXER_REVERSE_RATIO = -0.1;
+    public static final double INDEXER_FORWARD_RATIO = 0.5;
   }
 
   public static final class ClimbConstants {

@@ -6,45 +6,32 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CANFuelSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+
 import static frc.robot.Constants.FuelConstants.*;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/**
+ * Intake command runs the indexer and flywheel in reverse to pull balls in.
+ */
 public class Intake extends Command {
-  /** Creates a new Intake. */
+  private final ShooterSubsystem shooter;
 
-  CANFuelSubsystem fuelSubsystem;
-
-  public Intake(CANFuelSubsystem fuelSystem) {
-    addRequirements(fuelSystem);
-    this.fuelSubsystem = fuelSystem;
+  public Intake(ShooterSubsystem shooterSubsystem) {
+    shooter = shooterSubsystem;
+    addRequirements(shooterSubsystem);
   }
 
-  // Called when the command is initially scheduled. Set the rollers to the
-  // appropriate values for intaking
-  @Override
-  public void initialize() {
-    fuelSubsystem
-        .setIntakeLauncherRoller(SmartDashboard.getNumber("Intaking intake roller value", INTAKE_INTAKING_PERCENT));
-    fuelSubsystem.setFeederRoller(-1 * SmartDashboard.getNumber("Intaking feeder roller value", INDEXER_INTAKING_PERCENT));
-  }
-
-  // Called every time the scheduler runs while the command is scheduled. This
-  // command doesn't require updating any values while running
   @Override
   public void execute() {
+    // Run indexer at intaking power
+    shooter.setIndexerPower(INDEXER_INTAKING_PERCENT);
+    
+    // Spin wheels at a slower RPM for intaking
+    shooter.setLauncherVelocityRPM(INTAKE_LAUNCHER_RPM);
   }
 
-  // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
-    fuelSubsystem.setIntakeLauncherRoller(0);
-    fuelSubsystem.setFeederRoller(0);
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
+    shooter.stop();
   }
 }

@@ -5,31 +5,28 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CANFuelSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
+/**
+ * Unjam command provides a brief reversal to clear any jams in the feeder.
+ */
 public class Unjam extends Command {
-  private final CANFuelSubsystem fuelSubsystem;
+  private final ShooterSubsystem shooter;
 
-  public Unjam(CANFuelSubsystem fuelSubsystem) {
-    this.fuelSubsystem = fuelSubsystem;
-    addRequirements(fuelSubsystem);
+  public Unjam(ShooterSubsystem shooterSubsystem) {
+    shooter = shooterSubsystem;
+    addRequirements(shooterSubsystem);
   }
 
   @Override
-  public void initialize() {
-    fuelSubsystem.runUnjam();
+  public void execute() {
+    // Reverse slightly to clear jam
+    shooter.setIndexerPower(-0.6);
+    shooter.setLauncherVelocityRPM(-500);
   }
-
-  @Override
-  public void execute() {}
 
   @Override
   public void end(boolean interrupted) {
-    fuelSubsystem.stop();
-  }
-
-  @Override
-  public boolean isFinished() {
-    return false;
+    shooter.stop();
   }
 }
