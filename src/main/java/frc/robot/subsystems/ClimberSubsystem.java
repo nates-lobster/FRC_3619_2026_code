@@ -34,6 +34,7 @@ public class ClimberSubsystem extends SubsystemBase {
     // Add fields in SmartDashboard to set the limits.
     SmartDashboard.setDefaultNumber("Climber/Upper Limit", upperLimitDefault);
     SmartDashboard.setDefaultNumber("Climber/Retract Limit", 0.0);
+    SmartDashboard.setDefaultBoolean("Climber/Override Limits", false);
   }
 
   // A method to set the percentage of the climber
@@ -42,13 +43,18 @@ public class ClimberSubsystem extends SubsystemBase {
     double upperLimit = SmartDashboard.getNumber("Climber/Upper Limit", upperLimitDefault);
     double retractLimit = SmartDashboard.getNumber("Climber/Retract Limit", 0.0);
 
-    // If we're trying to move UP (positive power) and at/past the upper limit, stop.
-    if (power > 0 && currentPosition >= upperLimit) {
-      power = 0;
-    }
-    // If we're trying to move DOWN (negative power) and at/past the retract limit, stop.
-    else if (power < 0 && currentPosition <= retractLimit) {
-      power = 0;
+    // Check for override switch
+    boolean override = SmartDashboard.getBoolean("Climber/Override Limits", false);
+
+    if (!override) {
+      // If we're trying to move UP (positive power) and at/past the upper limit, stop.
+      if (power > 0 && currentPosition >= upperLimit) {
+        power = 0;
+      }
+      // If we're trying to move DOWN (negative power) and at/past the retract limit, stop.
+      else if (power < 0 && currentPosition <= retractLimit) {
+        power = 0;
+      }
     }
 
     climberMotor.set(power);
