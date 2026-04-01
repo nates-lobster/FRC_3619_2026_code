@@ -23,11 +23,11 @@ public class Intake extends Command {
 
   @Override
   public void execute() {
-    // Run indexer at intaking power
+    // Run indexer at intaking power (0.6)
     shooter.setIndexerPower(INDEXER_INTAKING_PERCENT);
     
-    // Spin wheels at a slower RPM for intaking
-    shooter.setLauncherVelocityRPM(INTAKE_LAUNCHER_RPM);
+    // Run launcher at intaking power (0.8)
+    shooter.setLauncherPower(INTAKE_INTAKING_PERCENT);
   }
 
   @Override

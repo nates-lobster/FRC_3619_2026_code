@@ -61,11 +61,11 @@ public final class Constants {
     public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 80;
 
     // All values likely need to be tuned based on your robot
-    public static final double INDEXER_INTAKING_PERCENT = .8; 
+    public static final double INDEXER_INTAKING_PERCENT = .6;
     public static final double INDEXER_LAUNCHING_PERCENT = 1.0;
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = 0.5;
 
-    public static final double INTAKE_INTAKING_PERCENT = 0.6;
+    public static final double INTAKE_INTAKING_PERCENT = 0.8;
     public static final double LAUNCHING_LAUNCHER_RPM = 3000.0;
     public static final double INTAKE_LAUNCHER_RPM = 1000.0;
     public static final double INTAKE_EJECT_PERCENT = -0.8;
@@ -78,7 +78,8 @@ public final class Constants {
     // 2. P corrects for small errors/dips when a ball is launched.
     // 3. I-term is avoided to prevent windup/overshoot on a high-inertia wheel.
     public static final double SHOOTER_P = 0.0001; 
-    public static final double SHOOTER_FF = 0.00017; 
+    public static final double SHOOTER_FF = 0.00017;
+    public static final double INDEXER_FF = 0.0002;
     
     public static final double SHOOTER_RPM_TOLERANCE = 100.0;
 

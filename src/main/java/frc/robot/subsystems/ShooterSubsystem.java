@@ -80,7 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // Indexer also uses velocity control during launch
     indexerConfig.closedLoop
         .p(SHOOTER_P);
-    indexerConfig.closedLoop.feedForward.kV(SHOOTER_FF);
+    indexerConfig.closedLoop.feedForward.kV(INDEXER_FF);
 
     indexer.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -110,6 +110,15 @@ public class ShooterSubsystem extends SubsystemBase {
       leftController.setSetpoint(targetRPM, ControlType.kVelocity);
       rightController.setSetpoint(targetRPM, ControlType.kVelocity);
     }
+  }
+
+  /**
+   * Sets raw duty cycle power to the flywheels (used for intake).
+   * @param power Power from -1.0 to 1.0.
+   */
+  public void setLauncherPower(double power) {
+    leftFlywheel.set(power);
+    rightFlywheel.set(power);
   }
 
   /**
@@ -175,9 +184,9 @@ public class ShooterSubsystem extends SubsystemBase {
       tuningConfig.closedLoop.p(p);
       tuningConfig.closedLoop.feedForward.kV(ff);
       
-      leftFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-      rightFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-      indexer.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+      leftFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+      rightFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+      indexer.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
       
       lastP = p;
       lastFF = ff;
