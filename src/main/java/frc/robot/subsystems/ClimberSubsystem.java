@@ -7,8 +7,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkMax;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.ClimbConstants.*;
 
@@ -31,9 +32,13 @@ public class ClimberSubsystem extends SubsystemBase {
     climbConfig.inverted(true);
     climberMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+    // Initialize Preferences from Constants if they don't exist
+    Preferences.initDouble("Climber/Upper Limit", upperLimitDefault);
+    Preferences.initDouble("Climber/Retract Limit", 0.0);
+    
     // Add fields in SmartDashboard to set the limits.
-    SmartDashboard.setDefaultNumber("Climber/Upper Limit", upperLimitDefault);
-    SmartDashboard.setDefaultNumber("Climber/Retract Limit", 0.0);
+    SmartDashboard.putNumber("Climber/Upper Limit", Preferences.getDouble("Climber/Upper Limit", upperLimitDefault));
+    SmartDashboard.putNumber("Climber/Retract Limit", Preferences.getDouble("Climber/Retract Limit", 0.0));
     SmartDashboard.setDefaultBoolean("Climber/Override Limits", false);
   }
 
@@ -77,6 +82,17 @@ public class ClimberSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Save to preferences if changed from dashboard
+    double upper = SmartDashboard.getNumber("Climber/Upper Limit", -11.1);
+    double retract = SmartDashboard.getNumber("Climber/Retract Limit", -11.1);
+
+    if (upper != -11.1 && upper != Preferences.getDouble("Climber/Upper Limit", upperLimitDefault)) {
+      Preferences.setDouble("Climber/Upper Limit", upper);
+    }
+    if (retract != -11.1 && retract != Preferences.getDouble("Climber/Retract Limit", 0.0)) {
+      Preferences.setDouble("Climber/Retract Limit", retract);
+    }
+
     // Project the encoder position to SmartDashboard
     SmartDashboard.putNumber("Climber/Encoder Position", climberMotor.getEncoder().getPosition());
   }

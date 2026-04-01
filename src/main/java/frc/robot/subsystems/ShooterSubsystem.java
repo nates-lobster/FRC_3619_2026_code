@@ -9,6 +9,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -88,13 +89,18 @@ public class ShooterSubsystem extends SubsystemBase {
     rightController = rightFlywheel.getClosedLoopController();
     indexerController = indexer.getClosedLoopController();
 
-    // SmartDashboard setup for live tuning
-    SmartDashboard.putNumber("Shooter/P", SHOOTER_P);
-    SmartDashboard.putNumber("Shooter/FF", SHOOTER_FF);
-    SmartDashboard.putNumber("Shooter/Target RPM", LAUNCHING_LAUNCHER_RPM);
+    // Preferences/SmartDashboard setup for live tuning
+    // Use Preferences if available, otherwise fallback to Constants
+    Preferences.initDouble("Shooter/P", SHOOTER_P);
+    Preferences.initDouble("Shooter/FF", SHOOTER_FF);
+    Preferences.initDouble("Shooter/Target RPM", LAUNCHING_LAUNCHER_RPM);
 
-    lastP = SHOOTER_P;
-    lastFF = SHOOTER_FF;
+    SmartDashboard.putNumber("Shooter/P", Preferences.getDouble("Shooter/P", SHOOTER_P));
+    SmartDashboard.putNumber("Shooter/FF", Preferences.getDouble("Shooter/FF", SHOOTER_FF));
+    SmartDashboard.putNumber("Shooter/Target RPM", Preferences.getDouble("Shooter/Target RPM", LAUNCHING_LAUNCHER_RPM));
+
+    lastP = Preferences.getDouble("Shooter/P", SHOOTER_P);
+    lastFF = Preferences.getDouble("Shooter/FF", SHOOTER_FF);
   }
 
   /**
@@ -165,10 +171,10 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Read tuning values from dashboard
-    double p = SmartDashboard.getNumber("Shooter/P", SHOOTER_P);
-    double ff = SmartDashboard.getNumber("Shooter/FF", SHOOTER_FF);
+    double p = SmartDashboard.getNumber("Shooter/P", lastP);
+    double ff = SmartDashboard.getNumber("Shooter/FF", lastFF);
 
-    // Update config if values changed on the dashboard
+    // Update config and preferences if values changed on the dashboard
     if (p != lastP || ff != lastFF) {
       SparkMaxConfig tuningConfig = new SparkMaxConfig();
       tuningConfig.closedLoop.p(p).velocityFF(ff);
@@ -176,6 +182,10 @@ public class ShooterSubsystem extends SubsystemBase {
       leftFlywheel.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
       rightFlywheel.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
       indexer.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
+      
+      // Save to preferences for persistence
+      Preferences.setDouble("Shooter/P", p);
+      Preferences.setDouble("Shooter/FF", ff);
       
       lastP = p;
       lastFF = ff;

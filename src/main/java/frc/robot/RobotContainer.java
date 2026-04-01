@@ -24,9 +24,12 @@ import frc.robot.commands.Intake;
 import frc.robot.commands.LaunchSequence;
 import frc.robot.commands.TurnAround;
 import frc.robot.commands.Unjam;
+import frc.robot.commands.RecordMacro;
+import frc.robot.commands.ReplayMacro;
 import frc.robot.subsystems.CANDriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.utils.MacroRecorder;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -40,6 +43,7 @@ public class RobotContainer {
   private final CANDriveSubsystem driveSubsystem = new CANDriveSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+  private final MacroRecorder macroRecorder = new MacroRecorder();
 
   // The driver's controller
   private final CommandXboxController driverController = new CommandXboxController(
@@ -51,6 +55,7 @@ public class RobotContainer {
 
   // PathPlanner auto chooser - automatically populated from deploy/pathplanner/autos/
   private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<String> macroSlotChooser = new SendableChooser<>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -82,6 +87,20 @@ public class RobotContainer {
           "Open PathPlanner and save your robot config, or check settings.json.");
     }
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    
+    // Setup Macro Slots
+    macroSlotChooser.setDefaultOption("Macro Slot 1", "macro1");
+    macroSlotChooser.addOption("Macro Slot 2", "macro2");
+    macroSlotChooser.addOption("Macro Slot 3", "macro3");
+    SmartDashboard.putData("Macro/Recording Slot", macroSlotChooser);
+
+    // Manual additions to auto chooser for macro replay
+    autoChooser.addOption("Replay Macro 1", new ReplayMacro(driveSubsystem, macroRecorder, "macro1"));
+    autoChooser.addOption("Replay Macro 2", new ReplayMacro(driveSubsystem, macroRecorder, "macro2"));
+    autoChooser.addOption("Replay Macro 3", new ReplayMacro(driveSubsystem, macroRecorder, "macro3"));
+    
+    // Add Recording status to SmartDashboard
+    SmartDashboard.putBoolean("Macro/Recording", false);
   }
 
   /**
@@ -110,6 +129,20 @@ public class RobotContainer {
 
     // When X button is pressed, activate turbo boost for 1.5 seconds
     driverController.x().onTrue(Commands.runOnce(() -> driveSubsystem.activateTurbo()));
+
+    // Record Macro with D-Pad Down: Start recording when pressed, stop when pressed again (toggle)
+    // Or just hold it? Toggle is usually safer for long sequences.
+    // driverController.povDown().toggleOnTrue(new RecordMacro(driveSubsystem, driverController, macroRecorder));
+    
+    // Map D-Pad Down to Toggle Recording (Press once to start, Press again to stop)
+    // It records to the slot currently selected in "Macro/Recording Slot"
+    driverController.povDown().toggleOnTrue(new RecordMacro(driveSubsystem, driverController, macroRecorder, () -> macroSlotChooser.getSelected()));
+    // Note: RecordMacro is interrupted when any other drive command takes over (like teleop default)
+    // But since RecordMacro has priority while povDown is used, we need a way to end it.
+    // If I use toggleOnTrue it will stay active.
+    
+    // Alternatively, just hold the button to record:
+    // driverController.povDown().whileTrue(new RecordMacro(...));
 
    // While the down arrow on the directional pad is held it will unclimb the robot
     // driverController.povDown().whileTrue(new ClimbDown(climberSubsystem));

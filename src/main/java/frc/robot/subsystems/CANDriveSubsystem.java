@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -109,11 +110,17 @@ public class CANDriveSubsystem extends SubsystemBase {
         rightEncoder.getPosition()
     );
 
+    // Initialize Preferences from Constants
+    Preferences.initDouble("Drive/TurnAround Speed", TURNAROUND_REVERSE_SPEED);
+    Preferences.initDouble("Drive/TurnAround Seconds", TURNAROUND_REVERSE_SECONDS);
+    Preferences.initDouble("Drive/TurnAround Spin Speed", TURNAROUND_SPIN_SPEED);
+    Preferences.initDouble("Drive/TurnAround Spin Seconds", TURNAROUND_SPIN_SECONDS);
+
     SmartDashboard.putData("Field", field);
-    SmartDashboard.putNumber("TurnAround reverse speed", TURNAROUND_REVERSE_SPEED);
-    SmartDashboard.putNumber("TurnAround reverse seconds", TURNAROUND_REVERSE_SECONDS);
-    SmartDashboard.putNumber("TurnAround spin speed", TURNAROUND_SPIN_SPEED);
-    SmartDashboard.putNumber("TurnAround spin seconds", TURNAROUND_SPIN_SECONDS);
+    SmartDashboard.putNumber("TurnAround reverse speed", Preferences.getDouble("Drive/TurnAround Speed", TURNAROUND_REVERSE_SPEED));
+    SmartDashboard.putNumber("TurnAround reverse seconds", Preferences.getDouble("Drive/TurnAround Seconds", TURNAROUND_REVERSE_SECONDS));
+    SmartDashboard.putNumber("TurnAround spin speed", Preferences.getDouble("Drive/TurnAround Spin Speed", TURNAROUND_SPIN_SPEED));
+    SmartDashboard.putNumber("TurnAround spin seconds", Preferences.getDouble("Drive/TurnAround Spin Seconds", TURNAROUND_SPIN_SECONDS));
 
     // Configure PathPlanner AutoBuilder
     try {
@@ -135,6 +142,24 @@ public class CANDriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Update preferences if changed on dashboard
+    double reverseSpeed = SmartDashboard.getNumber("TurnAround reverse speed", -1);
+    if (reverseSpeed != -1 && reverseSpeed != Preferences.getDouble("Drive/TurnAround Speed", TURNAROUND_REVERSE_SPEED)) {
+      Preferences.setDouble("Drive/TurnAround Speed", reverseSpeed);
+    }
+    double reverseSeconds = SmartDashboard.getNumber("TurnAround reverse seconds", -1);
+    if (reverseSeconds != -1 && reverseSeconds != Preferences.getDouble("Drive/TurnAround Seconds", TURNAROUND_REVERSE_SECONDS)) {
+      Preferences.setDouble("Drive/TurnAround Seconds", reverseSeconds);
+    }
+    double spinSpeed = SmartDashboard.getNumber("TurnAround spin speed", -1);
+    if (spinSpeed != -1 && spinSpeed != Preferences.getDouble("Drive/TurnAround Spin Speed", TURNAROUND_SPIN_SPEED)) {
+      Preferences.setDouble("Drive/TurnAround Spin Speed", spinSpeed);
+    }
+    double spinSeconds = SmartDashboard.getNumber("TurnAround spin seconds", -1);
+    if (spinSeconds != -1 && spinSeconds != Preferences.getDouble("Drive/TurnAround Spin Seconds", TURNAROUND_SPIN_SECONDS)) {
+      Preferences.setDouble("Drive/TurnAround Spin Seconds", spinSeconds);
+    }
+
     // Update odometry each loop
     odometry.update(getHeading(), leftEncoder.getPosition(), rightEncoder.getPosition());
     field.setRobotPose(getPose());
