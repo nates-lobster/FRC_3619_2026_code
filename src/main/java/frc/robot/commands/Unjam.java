@@ -20,9 +20,8 @@ public class Unjam extends Command {
 
   @Override
   public void execute() {
-    // Reverse slightly to clear jam
+    // Reverse indexer to clear jam
     shooter.setIndexerPower(-0.6);
-    shooter.setLauncherVelocityRPM(-500);
   }
 
   @Override

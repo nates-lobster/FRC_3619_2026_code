@@ -64,16 +64,15 @@ public class RobotContainer {
     // Register named commands for use in PathPlanner auto routines.
     // Add these to any auto in the PathPlanner GUI as action blocks.
     NamedCommands.registerCommand("Intake", new Intake(shooterSubsystem));
-    NamedCommands.registerCommand("Launch",
-        new Unjam(shooterSubsystem).withTimeout(1.0).andThen(new LaunchSequence(shooterSubsystem)));
+    NamedCommands.registerCommand("Launch", new LaunchSequence(shooterSubsystem));
     NamedCommands.registerCommand("Arm Up", 
         Commands.run(() -> climberSubsystem.setClimber(frc.robot.Constants.ClimbConstants.CLIMBER_MOTOR_UP_PERCENT), climberSubsystem)
             .until(() -> climberSubsystem.getPosition() >= SmartDashboard.getNumber("Climber/Upper Limit", 100.0))
-            .finallyDo(() -> climberSubsystem.stop()));
+            .finallyDo((interrupted) -> climberSubsystem.stop()));
     NamedCommands.registerCommand("Arm Down", 
         Commands.run(() -> climberSubsystem.setClimber(frc.robot.Constants.ClimbConstants.CLIMBER_MOTOR_DOWN_PERCENT), climberSubsystem)
             .until(() -> climberSubsystem.getPosition() <= SmartDashboard.getNumber("Climber/Retract Limit", 0.0))
-            .finallyDo(() -> climberSubsystem.stop()));
+            .finallyDo((interrupted) -> climberSubsystem.stop()));
 
     configureBindings();
 
@@ -120,8 +119,7 @@ public class RobotContainer {
     driverController.leftBumper().whileTrue(new Intake(shooterSubsystem));
     // While the right bumper on the operator controller is held, spin up for 1
     // second, then launch fuel. When the button is released, stop.
-    driverController.rightBumper().whileTrue(
-        new Unjam(shooterSubsystem).withTimeout(1.0).andThen(new LaunchSequence(shooterSubsystem)));
+    driverController.rightBumper().whileTrue(new LaunchSequence(shooterSubsystem));
     // While the A button is held on the operator controller, eject fuel back out
     // the intake
     driverController.a().whileTrue(

@@ -1,13 +1,14 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -62,8 +63,8 @@ public class ShooterSubsystem extends SubsystemBase {
     
     // Set PF gains for the flywheel
     flywheelConfig.closedLoop
-        .p(SHOOTER_P)
-        .velocityFF(SHOOTER_FF);
+        .p(SHOOTER_P);
+    flywheelConfig.closedLoop.feedForward.kV(SHOOTER_FF);
 
     // Apply config to flywheels (right is inverted in this setup)
     rightFlywheel.configure(flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -79,8 +80,8 @@ public class ShooterSubsystem extends SubsystemBase {
     
     // Indexer also uses velocity control during launch
     indexerConfig.closedLoop
-        .p(SHOOTER_P) 
-        .velocityFF(SHOOTER_FF); 
+        .p(SHOOTER_P);
+    indexerConfig.closedLoop.feedForward.kV(INDEXER_FF);
 
     indexer.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -101,6 +102,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     lastP = Preferences.getDouble("Shooter/P", SHOOTER_P);
     lastFF = Preferences.getDouble("Shooter/FF", SHOOTER_FF);
+
+    // Hardcoded control switches and variables
+    SmartDashboard.putBoolean("Shooter/Launch PID Enabled", DEFAULT_USE_PID);
+    SmartDashboard.putNumber("Shooter/Hard Launch Power", HARD_LAUNCH_POWER);
+    SmartDashboard.putNumber("Shooter/Hard Indexer Reverse Power", HARD_INDEXER_REVERSE_POWER);
+    SmartDashboard.putNumber("Shooter/Hard Indexer Forward Power", HARD_INDEXER_FORWARD_POWER);
+    SmartDashboard.putNumber("Shooter/Hard Reverse Seconds", HARD_INDEXER_REVERSE_SECONDS);
   }
 
   /**
@@ -115,6 +123,15 @@ public class ShooterSubsystem extends SubsystemBase {
       leftController.setSetpoint(targetRPM, ControlType.kVelocity);
       rightController.setSetpoint(targetRPM, ControlType.kVelocity);
     }
+  }
+
+  /**
+   * Sets raw duty cycle power to the flywheels (used for intake).
+   * @param power Power from -1.0 to 1.0.
+   */
+  public void setLauncherPower(double power) {
+    leftFlywheel.set(power);
+    rightFlywheel.set(power);
   }
 
   /**
@@ -177,11 +194,12 @@ public class ShooterSubsystem extends SubsystemBase {
     // Update config and preferences if values changed on the dashboard
     if (p != lastP || ff != lastFF) {
       SparkMaxConfig tuningConfig = new SparkMaxConfig();
-      tuningConfig.closedLoop.p(p).velocityFF(ff);
+      tuningConfig.closedLoop.p(p);
+      tuningConfig.closedLoop.feedForward.kV(ff);
       
-      leftFlywheel.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
-      rightFlywheel.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
-      indexer.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersist);
+      leftFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+      rightFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+      indexer.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
       
       // Save to preferences for persistence
       Preferences.setDouble("Shooter/P", p);
