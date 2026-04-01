@@ -96,6 +96,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     lastP = SHOOTER_P;
     lastFF = SHOOTER_FF;
+
+    // Hardcoded control switches and variables
+    SmartDashboard.putBoolean("Shooter/Launch PID Enabled", DEFAULT_USE_PID);
+    SmartDashboard.putNumber("Shooter/Hard Launch Power", HARD_LAUNCH_POWER);
+    SmartDashboard.putNumber("Shooter/Hard Indexer Reverse Power", HARD_INDEXER_REVERSE_POWER);
+    SmartDashboard.putNumber("Shooter/Hard Indexer Forward Power", HARD_INDEXER_FORWARD_POWER);
+    SmartDashboard.putNumber("Shooter/Hard Reverse Seconds", HARD_INDEXER_REVERSE_SECONDS);
   }
 
   /**

@@ -61,7 +61,7 @@ public final class Constants {
     public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 80;
 
     // All values likely need to be tuned based on your robot
-    public static final double INDEXER_INTAKING_PERCENT = .6;
+    public static final double INDEXER_INTAKING_PERCENT = -0.6; // Flipped sign to fix intake direction
     public static final double INDEXER_LAUNCHING_PERCENT = 1.0;
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = 0.5;
 
@@ -71,6 +71,13 @@ public final class Constants {
     public static final double INTAKE_EJECT_PERCENT = -0.8;
 
     public static final double SPIN_UP_SECONDS = 0.3;
+    
+    // Hardcoded Launch Mode Constants
+    public static final boolean DEFAULT_USE_PID = false;
+    public static final double HARD_LAUNCH_POWER = 0.7;
+    public static final double HARD_INDEXER_REVERSE_POWER = -0.4;
+    public static final double HARD_INDEXER_FORWARD_POWER = 0.6;
+    public static final double HARD_INDEXER_REVERSE_SECONDS = 0.3;
 
     // Shooter PID/PF Constants
     // We use PF (Proportional + Feedforward) for flywheels because:
