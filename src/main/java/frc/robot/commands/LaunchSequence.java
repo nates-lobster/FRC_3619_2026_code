@@ -52,38 +52,20 @@ public class LaunchSequence extends Command {
 
   @Override
   public void execute() {
+    // 1. Run flywheels at target
     if (usePID) {
-      // --- PID (Velocity Control) Mode ---
       shooter.setLauncherVelocityRPM(targetRPM);
-
-      // Initial spinup: reverse indexer until flywheel reaches speed
-      if (!hasReachedSetpoint) {
-        if (shooter.atSetpoint(targetRPM, SHOOTER_RPM_TOLERANCE)) {
-          hasReachedSetpoint = true;
-        } else {
-          // Clear the path while spinning up
-          shooter.setIndexerVelocityRPM(targetRPM * INDEXER_REVERSE_RATIO);
-          return;
-        }
-      }
-
-      // Persistent feeding: once setpoint is reached, keep feeding to maintain inertia.
-      double feedRatio = shooter.atSetpoint(targetRPM, SHOOTER_RPM_TOLERANCE) 
-          ? INDEXER_FORWARD_RATIO // 0.5
-          : 0.4;
-      
-      shooter.setIndexerVelocityRPM(targetRPM * feedRatio);
     } else {
-      // --- Hardcoded (Duty Cycle) Mode ---
-      // 1. Run flywheels at fixed power
       shooter.setLauncherPower(hardLaunchPower);
+    }
 
-      // 2. Handle indexer timing: reverse for X seconds then feed forward
-      if (timer.get() < hardReverseSeconds) {
-        shooter.setIndexerPower(hardIndexerReversePower);
-      } else {
-        shooter.setIndexerPower(hardIndexerForwardPower);
-      }
+    // 2. Dynamic indexer control based on flywheel speed
+    // If we are at the target speed (or using fixed power mode), feed the ball.
+    // Otherwise, reverse slightly to allow the flywheel to recover.
+    if (shooter.atSetpoint(targetRPM, SHOOTER_RPM_TOLERANCE)) {
+      shooter.setIndexerPower(0.60); // 60% forward feeding
+    } else {
+      shooter.setIndexerPower(-0.20); // 20% backward intake direction
     }
   }
 
