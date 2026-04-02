@@ -44,7 +44,7 @@ public class ReplayMacro extends Command {
             Step step = steps.get(currentStep);
             
             // Replay all subsystems
-            driveSubsystem.driveArcade(step.driveX, step.driveRot, false);
+            driveSubsystem.driveArcade(step.driveX, step.driveRot, true);
             shooterSubsystem.setLauncherPower(step.shooterPower);
             shooterSubsystem.setIndexerPower(step.indexerPower);
             climberSubsystem.setClimber(step.climberPower);
