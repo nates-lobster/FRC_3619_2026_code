@@ -62,10 +62,10 @@ public class LaunchSequence extends Command {
     // 2. Dynamic indexer control based on flywheel speed
     // If we are at the target speed (or using fixed power mode), feed the ball.
     // Otherwise, reverse slightly to allow the flywheel to recover.
-    if (shooter.atSetpoint(targetRPM, SHOOTER_RPM_TOLERANCE)) {
-      shooter.setIndexerPower(0.60); // 60% forward feeding
+    if (shooter.atSetpoint(targetRPM, 300.0)) {
+      shooter.setIndexerPower(0.80); // 80% forward feeding
     } else {
-      shooter.setIndexerPower(-0.20); // 20% backward intake direction
+      shooter.setIndexerPower(-0.60); // 60% backward intake direction
     }
   }
 
