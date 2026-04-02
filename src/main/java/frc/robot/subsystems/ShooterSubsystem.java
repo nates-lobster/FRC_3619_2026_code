@@ -197,9 +197,9 @@ public class ShooterSubsystem extends SubsystemBase {
       tuningConfig.closedLoop.p(p);
       tuningConfig.closedLoop.feedForward.kV(ff);
       
-      leftFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-      rightFlywheel.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-      indexer.configure(tuningConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+      leftFlywheel.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersistParameters);
+      rightFlywheel.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersistParameters);
+      indexer.configure(tuningConfig, ResetMode.kNoReset, PersistMode.kNoPersistParameters);
       
       // Save to preferences for persistence
       Preferences.setDouble("Shooter/P", p);
