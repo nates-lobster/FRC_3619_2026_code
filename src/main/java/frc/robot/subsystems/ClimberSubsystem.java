@@ -96,4 +96,11 @@ public class ClimberSubsystem extends SubsystemBase {
     // Project the encoder position to SmartDashboard
     SmartDashboard.putNumber("Climber/Encoder Position", climberMotor.getEncoder().getPosition());
   }
+
+  /**
+   * Returns the applied duty cycle (power) of the climber.
+   */
+  public double getAppliedOutput() {
+    return climberMotor.getAppliedOutput();
+  }
 }

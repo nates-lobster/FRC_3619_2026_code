@@ -6,18 +6,32 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.CANDriveSubsystem;
 import frc.robot.utils.MacroRecorder;
 import static frc.robot.Constants.OperatorConstants.*;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 
 public class RecordMacro extends Command {
     private final CANDriveSubsystem driveSubsystem;
+    private final ShooterSubsystem shooterSubsystem;
+    private final ClimberSubsystem climberSubsystem;
     private final CommandXboxController controller;
     private final MacroRecorder recorder;
     private final java.util.function.Supplier<String> nameSupplier;
 
-    public RecordMacro(CANDriveSubsystem driveSubsystem, CommandXboxController controller, MacroRecorder recorder, java.util.function.Supplier<String> nameSupplier) {
+    public RecordMacro(CANDriveSubsystem driveSubsystem, 
+                       ShooterSubsystem shooterSubsystem,
+                       ClimberSubsystem climberSubsystem,
+                       CommandXboxController controller, 
+                       MacroRecorder recorder, 
+                       java.util.function.Supplier<String> nameSupplier) {
         this.driveSubsystem = driveSubsystem;
+        this.shooterSubsystem = shooterSubsystem;
+        this.climberSubsystem = climberSubsystem;
         this.controller = controller;
         this.recorder = recorder;
         this.nameSupplier = nameSupplier;
+        
+        // Only REQUIRE the drive subsystem to ensure we keep driving it.
+        // We only OBSERVE the other subsystems.
         addRequirements(driveSubsystem);
     }
 
@@ -36,8 +50,13 @@ public class RecordMacro extends Command {
         // Drive the robot normally
         driveSubsystem.driveArcade(xSpeed, zRotation);
 
-        // Record the speed and rotation (better to record the raw inputs)
-        recorder.record(xSpeed, zRotation);
+        // Sample everything
+        double shooterPower = shooterSubsystem.getFlywheelAppliedOutput();
+        double indexerPower = shooterSubsystem.getIndexerAppliedOutput();
+        double climberPower = climberSubsystem.getAppliedOutput();
+
+        // Record the speeds and powers
+        recorder.record(xSpeed, zRotation, shooterPower, indexerPower, climberPower);
     }
 
     @Override

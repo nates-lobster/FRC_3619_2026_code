@@ -17,18 +17,25 @@ public class MacroRecorder {
     
     public static class Step {
         public final double timestamp;
-        public final double left;
-        public final double right;
+        public final double driveX;
+        public final double driveRot;
+        public final double shooterPower;
+        public final double indexerPower;
+        public final double climberPower;
 
-        public Step(double timestamp, double left, double right) {
+        public Step(double timestamp, double driveX, double driveRot, double shooterPower, double indexerPower, double climberPower) {
             this.timestamp = timestamp;
-            this.left = left;
-            this.right = right;
+            this.driveX = driveX;
+            this.driveRot = driveRot;
+            this.shooterPower = shooterPower;
+            this.indexerPower = indexerPower;
+            this.climberPower = climberPower;
         }
 
         @Override
         public String toString() {
-            return String.format("%.3f,%.3f,%.3f", timestamp, left, right);
+            return String.format("%.3f,%.3f,%.3f,%.3f,%.3f,%.3f", 
+                timestamp, driveX, driveRot, shooterPower, indexerPower, climberPower);
         }
     }
 
@@ -44,9 +51,9 @@ public class MacroRecorder {
         System.out.println("[Macro] Recording started for: " + currentFileName);
     }
 
-    public void record(double left, double right) {
+    public void record(double driveX, double driveRot, double shooterPower, double indexerPower, double climberPower) {
         if (!isRecording) return;
-        recordedSteps.add(new Step(timer.get(), left, right));
+        recordedSteps.add(new Step(timer.get(), driveX, driveRot, shooterPower, indexerPower, climberPower));
     }
 
     public void stopRecording() {
@@ -84,11 +91,14 @@ public class MacroRecorder {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 3) {
+                if (parts.length >= 6) {
                     steps.add(new Step(
                         Double.parseDouble(parts[0]),
                         Double.parseDouble(parts[1]),
-                        Double.parseDouble(parts[2])
+                        Double.parseDouble(parts[2]),
+                        Double.parseDouble(parts[3]),
+                        Double.parseDouble(parts[4]),
+                        Double.parseDouble(parts[5])
                     ));
                 }
             }

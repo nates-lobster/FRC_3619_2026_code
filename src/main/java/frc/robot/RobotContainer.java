@@ -94,12 +94,13 @@ public class RobotContainer {
     SmartDashboard.putData("Macro/Recording Slot", macroSlotChooser);
 
     // Manual additions to auto chooser for macro replay
-    autoChooser.addOption("Replay Macro 1", new ReplayMacro(driveSubsystem, macroRecorder, "macro1"));
-    autoChooser.addOption("Replay Macro 2", new ReplayMacro(driveSubsystem, macroRecorder, "macro2"));
-    autoChooser.addOption("Replay Macro 3", new ReplayMacro(driveSubsystem, macroRecorder, "macro3"));
+    autoChooser.addOption("Replay Macro 1", new ReplayMacro(driveSubsystem, shooterSubsystem, climberSubsystem, macroRecorder, "macro1"));
+    autoChooser.addOption("Replay Macro 2", new ReplayMacro(driveSubsystem, shooterSubsystem, climberSubsystem, macroRecorder, "macro2"));
+    autoChooser.addOption("Replay Macro 3", new ReplayMacro(driveSubsystem, shooterSubsystem, climberSubsystem, macroRecorder, "macro3"));
     
     // Add Recording status to SmartDashboard
     SmartDashboard.putBoolean("Macro/Recording", false);
+    SmartDashboard.setDefaultBoolean("Macro/Record From Dashboard", false);
   }
 
   /**
@@ -134,7 +135,11 @@ public class RobotContainer {
     
     // Map D-Pad Down to Toggle Recording (Press once to start, Press again to stop)
     // It records to the slot currently selected in "Macro/Recording Slot"
-    driverController.povDown().toggleOnTrue(new RecordMacro(driveSubsystem, driverController, macroRecorder, () -> macroSlotChooser.getSelected()));
+    driverController.povDown().toggleOnTrue(new RecordMacro(driveSubsystem, shooterSubsystem, climberSubsystem, driverController, macroRecorder, () -> macroSlotChooser.getSelected()));
+
+    // Also allow triggering from SmartDashboard
+    new Trigger(() -> SmartDashboard.getBoolean("Macro/Record From Dashboard", false))
+        .whileTrue(new RecordMacro(driveSubsystem, shooterSubsystem, climberSubsystem, driverController, macroRecorder, () -> macroSlotChooser.getSelected()));
     // Note: RecordMacro is interrupted when any other drive command takes over (like teleop default)
     // But since RecordMacro has priority while povDown is used, we need a way to end it.
     // If I use toggleOnTrue it will stay active.

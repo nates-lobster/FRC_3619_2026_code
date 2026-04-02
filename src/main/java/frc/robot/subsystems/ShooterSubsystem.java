@@ -215,4 +215,18 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.getNumber("Shooter/Target RPM", LAUNCHING_LAUNCHER_RPM), 
         SHOOTER_RPM_TOLERANCE));
   }
+
+  /**
+   * Returns the applied duty cycle (power) of the flywheels.
+   */
+  public double getFlywheelAppliedOutput() {
+    return leftFlywheel.getAppliedOutput();
+  }
+
+  /**
+   * Returns the applied duty cycle (power) of the indexer.
+   */
+  public double getIndexerAppliedOutput() {
+    return indexer.getAppliedOutput();
+  }
 }
