@@ -61,12 +61,12 @@ public final class Constants {
     public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 80;
 
     // All values likely need to be tuned based on your robot
-    public static final double INDEXER_INTAKING_PERCENT = -0.6; // Flipped sign to fix intake direction
+    public static final double INDEXER_INTAKING_PERCENT = -0.9; // 3x faster than intake
     public static final double INDEXER_LAUNCHING_PERCENT = 1.0;
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = 0.5;
 
-    public static final double INTAKE_INTAKING_PERCENT = 0.8;
-    public static final double LAUNCHING_LAUNCHER_RPM = 4000.0;
+    public static final double INTAKE_INTAKING_PERCENT = 0.3; // Slower to allow indexer to pull
+    public static final double LAUNCHING_LAUNCHER_RPM = 4200.0;
     public static final double INTAKE_LAUNCHER_RPM = 1000.0;
     public static final double INTAKE_EJECT_PERCENT = -0.8;
 
@@ -80,11 +80,7 @@ public final class Constants {
     public static final double HARD_INDEXER_REVERSE_SECONDS = 0.3;
 
     // Shooter PID/PF Constants
-    // We use PF (Proportional + Feedforward) for flywheels because:
-    // 1. FF provides the baseline voltage needed for the target RPM.
-    // 2. P corrects for small errors/dips when a ball is launched.
-    // 3. I-term is avoided to prevent windup/overshoot on a high-inertia wheel.
-    public static final double SHOOTER_P = 0.0001; 
+    public static final double SHOOTER_P = 0.0003; 
     public static final double SHOOTER_FF = 0.0021;
     public static final double INDEXER_FF = 0.0002;
     
