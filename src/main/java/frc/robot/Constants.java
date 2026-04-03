@@ -61,14 +61,17 @@ public final class Constants {
     public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 80;
 
     // All values likely need to be tuned based on your robot
-    public static final double INDEXER_INTAKING_PERCENT = -0.9; // 3x faster than intake
+    public static final double INDEXER_INTAKING_PERCENT = -1.0; 
     public static final double INDEXER_LAUNCHING_PERCENT = 1.0;
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = 0.5;
 
-    public static final double INTAKE_INTAKING_PERCENT = 0.3; // Slower to allow indexer to pull
+    public static final double INTAKE_INTAKING_PERCENT = 0.6; 
     public static final double LAUNCHING_LAUNCHER_RPM = 4200.0;
     public static final double INTAKE_LAUNCHER_RPM = 1000.0;
     public static final double INTAKE_EJECT_PERCENT = -0.8;
+
+    public static final double INDEXER_JAM_RPM_THRESHOLD = 50.0;
+    public static final double INDEXER_JAM_SECONDS = 0.2;
 
     public static final double SPIN_UP_SECONDS = 0.3;
     

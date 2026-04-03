@@ -23,10 +23,10 @@ public class Intake extends Command {
 
   @Override
   public void execute() {
-    // Run indexer at intaking power (0.6)
+    // Run indexer at intaking power 
     shooter.setIndexerPower(INDEXER_INTAKING_PERCENT);
     
-    // Run launcher at intaking power (0.8)
+    // Run launcher at intaking power (0.6 by default)
     shooter.setLauncherPower(INTAKE_INTAKING_PERCENT);
   }
 

@@ -59,13 +59,26 @@ public class LaunchSequence extends Command {
       shooter.setLauncherPower(hardLaunchPower);
     }
 
-    // 2. Dynamic indexer control based on flywheel speed
-    // If we are at the target speed (or using fixed power mode), feed the ball.
-    // Otherwise, reverse slightly to allow the flywheel to recover.
+    // 2. Dynamic indexer control based on flywheel speed with Jam Detection
     if (shooter.atSetpoint(targetRPM, 300.0)) {
-      shooter.setIndexerPower(0.80); // 80% forward feeding
+      // Trying to feed. Check if we are JAMMED.
+      if (Math.abs(shooter.getLiveIndexerVelocity()) < INDEXER_JAM_RPM_THRESHOLD) {
+        if (timer.get() > INDEXER_JAM_SECONDS) {
+          // JAM DETECTED: Reverse at 100%
+          shooter.setIndexerPower(-1.0);
+        } else {
+          // Brief dip, keep pushing for now
+          shooter.setIndexerPower(0.80);
+        }
+      } else {
+        // Moving freely, push at 80%
+        shooter.setIndexerPower(0.80);
+        timer.reset(); // Clear the jam timer while moving
+      }
     } else {
-      shooter.setIndexerPower(-0.60); // 60% backward intake direction
+      // Recovering: run at 60% backward (intake direction) to clear the wheels
+      shooter.setIndexerPower(-0.60);
+      timer.reset();
     }
   }
 
