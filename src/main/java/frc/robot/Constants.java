@@ -66,14 +66,14 @@ public final class Constants {
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = 0.5;
 
     public static final double INTAKE_INTAKING_PERCENT = 0.8;
-    public static final double LAUNCHING_LAUNCHER_RPM = 3000.0;
+    public static final double LAUNCHING_LAUNCHER_RPM = 4000.0;
     public static final double INTAKE_LAUNCHER_RPM = 1000.0;
     public static final double INTAKE_EJECT_PERCENT = -0.8;
 
     public static final double SPIN_UP_SECONDS = 0.3;
     
     // Hardcoded Launch Mode Constants
-    public static final boolean DEFAULT_USE_PID = false;
+    public static final boolean DEFAULT_USE_PID = true;
     public static final double HARD_LAUNCH_POWER = 0.7;
     public static final double HARD_INDEXER_REVERSE_POWER = -0.4;
     public static final double HARD_INDEXER_FORWARD_POWER = 0.6;
@@ -85,7 +85,7 @@ public final class Constants {
     // 2. P corrects for small errors/dips when a ball is launched.
     // 3. I-term is avoided to prevent windup/overshoot on a high-inertia wheel.
     public static final double SHOOTER_P = 0.0001; 
-    public static final double SHOOTER_FF = 0.00017;
+    public static final double SHOOTER_FF = 0.0021;
     public static final double INDEXER_FF = 0.0002;
     
     public static final double SHOOTER_RPM_TOLERANCE = 100.0;
@@ -100,7 +100,7 @@ public final class Constants {
     public static final int CLIMBER_MOTOR_ID = 7;
 
     // Current limit for climb motor
-    public static final int CLIMBER_MOTOR_CURRENT_LIMIT = 30;
+    public static final int CLIMBER_MOTOR_CURRENT_LIMIT = 60;
     // Percentage to power the motor both up and down
     public static final double CLIMBER_MOTOR_DOWN_PERCENT = -0.8;
     public static final double CLIMBER_MOTOR_UP_PERCENT = 0.8;

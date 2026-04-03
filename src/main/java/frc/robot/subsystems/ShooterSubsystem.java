@@ -95,6 +95,7 @@ public class ShooterSubsystem extends SubsystemBase {
     Preferences.initDouble("Shooter/P", SHOOTER_P);
     Preferences.initDouble("Shooter/FF", SHOOTER_FF);
     Preferences.initDouble("Shooter/Target RPM", LAUNCHING_LAUNCHER_RPM);
+    Preferences.initBoolean("Shooter/Launch PID Enabled", true); // Set default to true
 
     SmartDashboard.putNumber("Shooter/P", Preferences.getDouble("Shooter/P", SHOOTER_P));
     SmartDashboard.putNumber("Shooter/FF", Preferences.getDouble("Shooter/FF", SHOOTER_FF));
@@ -104,7 +105,7 @@ public class ShooterSubsystem extends SubsystemBase {
     lastFF = Preferences.getDouble("Shooter/FF", SHOOTER_FF);
 
     // Hardcoded control switches and variables
-    SmartDashboard.putBoolean("Shooter/Launch PID Enabled", DEFAULT_USE_PID);
+    SmartDashboard.putBoolean("Shooter/Launch PID Enabled", Preferences.getBoolean("Shooter/Launch PID Enabled", true));
     SmartDashboard.putNumber("Shooter/Hard Launch Power", HARD_LAUNCH_POWER);
     SmartDashboard.putNumber("Shooter/Hard Indexer Reverse Power", HARD_INDEXER_REVERSE_POWER);
     SmartDashboard.putNumber("Shooter/Hard Indexer Forward Power", HARD_INDEXER_FORWARD_POWER);
@@ -207,6 +208,12 @@ public class ShooterSubsystem extends SubsystemBase {
       
       lastP = p;
       lastFF = ff;
+    }
+
+    // Save PID enable switch to preferences if changed
+    boolean pidEnabled = SmartDashboard.getBoolean("Shooter/Launch PID Enabled", true);
+    if (pidEnabled != Preferences.getBoolean("Shooter/Launch PID Enabled", true)) {
+      Preferences.setBoolean("Shooter/Launch PID Enabled", pidEnabled);
     }
 
     // Update status on dashboard
